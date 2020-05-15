@@ -29,7 +29,7 @@ def get_data_from_site(url, params=None, method='GET'):
     if method == 'GET':
         response = requests.get(url, params=params)
     else:
-        response = requests.post(url, params=params)
+        response = requests.post(url, data=params)
     response.raise_for_status()
     json_data = response.json()
     if 'error' in json_data:
