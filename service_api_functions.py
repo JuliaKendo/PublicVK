@@ -1,10 +1,10 @@
 import requests
 
 
-def get_filename(url_pict):
-    List = url_pict.split('/')
-    if len(List) > 1:
-        return List[len(List) - 1]
+def get_filename(url):
+    fragments_url = url.split('/')
+    if len(fragments_url) > 1:
+        return fragments_url[-1]
 
 
 def download_image(current_comic):
@@ -25,29 +25,36 @@ def upload_image(current_comic):
     return current_comic
 
 
-def query_to_site(url, params=None, method='GET'):
+def get_data_from_site(url, params=None, method='GET'):
     if method == 'GET':
         response = requests.get(url, params=params)
     else:
         response = requests.post(url, params=params)
     response.raise_for_status()
-    return response.json()
+    json_data = response.json()
+    if 'error' in json_data:
+        raise requests.exceptions.HTTPError(json_data['error']['error_msg'])
+    return json_data
 
 
 def get_file(url, filename):
-    responce = requests.get(url, verify=False, timeout=10)
-    responce.raise_for_status()
+    response = requests.get(url, verify=False, timeout=10)
+    response.raise_for_status()
 
-    with open(filename, 'wb') as f:
-        f.write(responce.content)
+    with open(filename, 'wb') as file_handler:
+        file_handler.write(response.content)
 
 
 def upload_file(url, filename):
     if url:
-        with open(filename, 'rb') as f:
+        with open(filename, 'rb') as file_handler:
             files = {
-                'photo': f,
+                'photo': file_handler,
             }
             response = requests.post(url, files=files)
             response.raise_for_status()
-            return response.json()
+            json_data = response.json()
+            if 'error' in json_data:
+                raise requests.exceptions.HTTPError(json_data['error']['error_msg'])
+
+            return json_data

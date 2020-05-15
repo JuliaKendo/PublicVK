@@ -12,13 +12,13 @@ logger = logging.getLogger('posting')
 
 def get_upload_url(params):
     url = 'https://api.vk.com/method/photos.getWallUploadServer'
-    uploading_address = service_api_functions.query_to_site(url, params)
+    uploading_address = service_api_functions.get_data_from_site(url, params)
     if uploading_address:
         return uploading_address['response']['upload_url']
 
 
 def get_page_of_comics():
-    last_comic = service_api_functions.query_to_site('http://xkcd.com/info.0.json')
+    last_comic = service_api_functions.get_data_from_site('http://xkcd.com/info.0.json')
     if last_comic:
         return random.randint(1, last_comic['num'])
 
@@ -27,7 +27,7 @@ def read_comic(params):
     page_of_comics = get_page_of_comics()
     url = 'http://xkcd.com/{0}/info.0.json'.format(page_of_comics)
     upload_url = get_upload_url(params)
-    current_comic = service_api_functions.query_to_site(url)
+    current_comic = service_api_functions.get_data_from_site(url)
     if current_comic:
         return {
             'filename': service_api_functions.download_image(current_comic),
@@ -47,7 +47,7 @@ def save_photo_to_post(upload_parametrs, params):
     params['photo'] = upload_parametrs['photo']
     params['server'] = upload_parametrs['server']
     params['hash'] = upload_parametrs['hash']
-    photo_to_post = service_api_functions.query_to_site(url, params, 'POST')
+    photo_to_post = service_api_functions.get_data_from_site(url, params, 'POST')
     if photo_to_post and photo_to_post['response']:
         upload_parametrs['attachment'] = create_attachment(photo_to_post['response'])
     return upload_parametrs
@@ -63,7 +63,7 @@ def public_post(published_comic, params):
         'attachments': published_comic['attachment'],
         'message': published_comic['title']
     }
-    service_api_functions.query_to_site(url, publication_params)
+    service_api_functions.get_data_from_site(url, publication_params)
 
 
 def initialize_logger():
