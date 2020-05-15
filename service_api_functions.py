@@ -31,10 +31,10 @@ def get_data_from_site(url, params=None, method='GET'):
     else:
         response = requests.post(url, data=params)
     response.raise_for_status()
-    json_data = response.json()
-    if 'error' in json_data:
-        raise requests.exceptions.HTTPError(json_data['error']['error_msg'])
-    return json_data
+    dict_data = response.json()
+    if 'error' in dict_data:
+        raise requests.exceptions.HTTPError(dict_data['error']['error_msg'])
+    return dict_data
 
 
 def get_file(url, filename):
@@ -53,8 +53,8 @@ def upload_file(url, filename):
             }
             response = requests.post(url, files=files)
             response.raise_for_status()
-            json_data = response.json()
-            if 'error' in json_data:
-                raise requests.exceptions.HTTPError(json_data['error']['error_msg'])
+            dict_data = response.json()
+            if 'error' in dict_data:
+                raise requests.exceptions.HTTPError(dict_data['error']['error_msg'])
 
-            return json_data
+            return dict_data
